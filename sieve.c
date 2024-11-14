@@ -67,22 +67,16 @@ int main(int argc, char * argv[])
 
 void find_primes(long bound, int verbose, char choice, int binary)
 {
-    long primecount=1;
-    long *primes=malloc(bound);
-    long compositescount=0;
-    long *composites=malloc(bound);
     uint8_t *list=malloc(((bound/4)+1));
     long count=2;            
     long current=2;          //current number being checked
     long currentprime=current;
-    long i=0;
     uint8_t bits = 0x00;    //for setting and checking bits
     bool is_set=true;       //for checking if bit is set
-    primes[0]=2;
 
-    if(binary==1)   //remove before submitting
+    if(binary==1)                    //remove before submitting
         binary=1;
-    if(verbose==1)
+    if(verbose==1)      //verbose output
     {
         fprintf(stderr,"upper bound: %ld\nshow primes: %s\n", bound, choice=='p' ? "true" : "false");
     } 
@@ -93,7 +87,7 @@ void find_primes(long bound, int verbose, char choice, int binary)
     {
         current=currentprime;
         count=2;
-        if(verbose==true)
+        if(verbose==true)       //verbose output
             fprintf(stderr, "marking multiples of %ld\n", currentprime);
         while(current<=bound)
         {
@@ -127,13 +121,12 @@ void find_primes(long bound, int verbose, char choice, int binary)
                 case 3:
                     if(list[current/4] & RR_BITS)
                         break;
-                    if(verbose==true)
+                    if(verbose==true && ~(list[current/4] & RR_BITS))
                         fprintf(stderr, "\tmarked %ld\n", current);
                     bits = RR_BITS;
                     break;
             }
             list[current/4] |= bits;
-            composites[compositescount]=current;
 
             ++count;
         }
@@ -158,76 +151,81 @@ void find_primes(long bound, int verbose, char choice, int binary)
                     break;
             }
         }
-        primes[primecount]=currentprime;
-        ++primecount;
         is_set=true;
 
     }
-
-    while(currentprime<=bound)
-    {
-        while(is_set==true)
-        {
-            ++currentprime;
-            
-            switch ( currentprime % 4 )  //Checks bits to find next prime
-            {
-                case 0:
-                    is_set = list[currentprime/4] & LL_BITS;
-                    break;
-                case 1:
-                    is_set = list[currentprime/4] & LM_BITS;
-                    break;
-                case 2:
-                    is_set = list[currentprime/4] & RM_BITS;
-                    break;
-                case 3:
-                    is_set = list[currentprime/4] & RR_BITS;
-                    break;
-            }
-        }
-        primes[primecount]=currentprime;
-        ++primecount;
-        is_set=true;
-    }
-    current=2;
-    currentprime=2;
+    currentprime=1;
+    is_set=true;
+    
     switch(choice)
     {
         case 'p':
-            // while(currentprime<=bound)
-            // {
-            //     while(is_set==true && currentprime<=bound)
-            //     {                
-            //         switch ( currentprime % 4 )  //Checks bits to find next prime
-            //         {
-            //             case 0:
-            //                 is_set = list[currentprime/4] & LL_BITS;
-            //                 break;
-            //             case 1:
-            //                 is_set = list[currentprime/4] & LM_BITS;
-            //                 break;
-            //             case 2:
-            //                 is_set = list[currentprime/4] & RM_BITS;
-            //                 break;
-            //             case 3:
-            //                 is_set = list[currentprime/4] & RR_BITS;
-            //                 break;
-            //         }
-            //         ++currentprime;
-            //     }
-            //     printf("%ld\n", currentprime);
-            //     ++currentprime;
-            //     is_set=true;
-                
-            // }
-            while(i<primecount && primes[i]<=bound)
+            currentprime=1;
+            is_set=true;
+            while(currentprime<=bound)
             {
-                printf("%ld\n", primes[i]);
-                ++i;
+                while(is_set==true && currentprime<=bound)
+                {                
+                    ++currentprime;
+                    switch ( currentprime % 4 )  //Checks bits to find next prime
+                    {
+                        case 0:
+                            is_set = list[currentprime/4] & LL_BITS;
+                            break;
+                        case 1:
+                            is_set = list[currentprime/4] & LM_BITS;
+                            break;
+                        case 2:
+                            is_set = list[currentprime/4] & RM_BITS;
+                            break;
+                        case 3:
+                            is_set = list[currentprime/4] & RR_BITS;
+                            break;
+                    }
+                    
+                }
+                if(currentprime<=bound)
+                    printf("%ld\n", currentprime);
+                
+                ++currentprime;
+                if(currentprime==3)
+                    printf("%ld\n", currentprime);
+                is_set=true;
+                
             }
+
             break;
         case 'c':
+            currentprime=1;
+            is_set=false;
+            while(currentprime<=bound)
+            {
+                while(is_set==false && currentprime<=bound)
+                {                
+                    ++currentprime;
+                    switch ( currentprime % 4 )  //Checks bits to find next prime
+                    {
+                        case 0:
+                            is_set = list[currentprime/4] & LL_BITS;
+                            break;
+                        case 1:
+                            is_set = list[currentprime/4] & LM_BITS;
+                            break;
+                        case 2:
+                            is_set = list[currentprime/4] & RM_BITS;
+                            break;
+                        case 3:
+                            is_set = list[currentprime/4] & RR_BITS;
+                            break;
+                    }
+                    
+                }
+                if(currentprime<=bound)
+                    printf("%ld\n", currentprime);
+
+                is_set=false;
+                
+            }
             break;
     }
     return;
