@@ -23,6 +23,7 @@ void find_primes(long bound, int verbose, char choice, int binary);
 
 int main(int argc, char * argv[])
 {
+    
     long bound=100;
     char choice='p';
     int opt;
@@ -42,11 +43,11 @@ int main(int argc, char * argv[])
                 break;
 
             case 'u':   //Sets the bound to input
-                if(isdigit(optarg)==0)
+                if(isdigit(strtol(optarg, NULL, 10))!=0)
                 {
                     return EXIT_FAILURE;
                 }
-                bound=(long)optarg;
+                bound=strtol(optarg, NULL, 10);
                 break;
             case 'b':
                 binary=1;
