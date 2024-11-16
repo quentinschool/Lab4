@@ -43,10 +43,6 @@ int main(int argc, char * argv[])
                 break;
 
             case 'u':   //Sets the bound to input
-                if(isdigit(strtol(optarg, NULL, 10))!=0)
-                {
-                    return EXIT_FAILURE;
-                }
                 bound=strtol(optarg, NULL, 10);
                 break;
             case 'b':
@@ -60,7 +56,8 @@ int main(int argc, char * argv[])
                 return EXIT_SUCCESS;
                 break;
             default:
-                return 0;
+                printf("Usage: ./sieve [-hvu:pcb]\n");
+                return EXIT_FAILURE;
         }
     }
     find_primes(bound, verbose, choice, binary);
@@ -129,7 +126,8 @@ void find_primes(long bound, int verbose, char choice, int binary)
                     bits = RR_BITS;
                     break;
             }
-            list[current/4] |= bits;
+                if(current<=bound)
+                    list[current/4] |= bits;
 
             ++count;
         }
@@ -173,22 +171,24 @@ void find_primes(long bound, int verbose, char choice, int binary)
                 {                
                     ++currentprime;
                     ++currentprime;
-                    switch ( currentprime % 4 )  //Checks bits to find next prime
+                    if(currentprime<=bound)
                     {
-                        case 0:
-                            is_set = list[currentprime/4] & LL_BITS;
-                            break;
-                        case 1:
-                            is_set = list[currentprime/4] & LM_BITS;
-                            break;
-                        case 2:
-                            is_set = list[currentprime/4] & RM_BITS;
-                            break;
-                        case 3:
-                            is_set = list[currentprime/4] & RR_BITS;
-                            break;
+                        switch ( currentprime % 4 )  //Checks bits to find next prime
+                        {
+                            case 0:
+                                is_set = list[currentprime/4] & LL_BITS;
+                                break;
+                            case 1:
+                                is_set = list[currentprime/4] & LM_BITS;
+                                break;
+                            case 2:
+                                is_set = list[currentprime/4] & RM_BITS;
+                                break;
+                            case 3:
+                                is_set = list[currentprime/4] & RR_BITS;
+                                break;
+                        }
                     }
-                    
                     
                 }
                 if(binary==1 && currentprime<=bound)
@@ -242,5 +242,7 @@ void find_primes(long bound, int verbose, char choice, int binary)
             }
             break;
     }
+    free(list);
+    list=NULL;
     return;
 }
