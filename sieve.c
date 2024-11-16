@@ -56,6 +56,8 @@ int main(int argc, char * argv[])
                 verbose=1;
                 break;
             case 'h':
+                printf("  -u #  : Specify the upper bound for prime/composite numbers.\n          The default upper bound is 100.\n  -p    : Print the prime numbers (the default)\n  -c    : Print the composite numbers, instead of prime numbers.\n  -b    : Output the values as raw binary, not as ASCII text\n  -v    : Print some diagnostic messages to stderr\n  -h    : Print some amazing help messages and exit.\n");
+                return EXIT_SUCCESS;
                 break;
             default:
                 return 0;
@@ -79,7 +81,7 @@ void find_primes(long bound, int verbose, char choice, int binary)
         binary=1;
     if(verbose==1)      //verbose output
     {
-        fprintf(stderr,"upper bound: %ld\nshow primes: %s\n", bound, choice=='p' ? "true" : "false");
+        fprintf(stderr,"upper bound: %ld\nshow primes: %s\nshow binary: %s\ntop check  : %ld\n", bound, choice=='p' ? "true" : "false", binary==1 ? "true" : "false", (long)sqrt(bound));
     } 
     count=2;
     
@@ -163,10 +165,13 @@ void find_primes(long bound, int verbose, char choice, int binary)
         case 'p':
             currentprime=1;
             is_set=true;
+            if(binary==0)
+                printf("%d\n", 2);
             while(currentprime<=bound)
             {
                 while(is_set==true && currentprime<=bound)
                 {                
+                    ++currentprime;
                     ++currentprime;
                     switch ( currentprime % 4 )  //Checks bits to find next prime
                     {
@@ -184,13 +189,17 @@ void find_primes(long bound, int verbose, char choice, int binary)
                             break;
                     }
                     
+                    
                 }
-                if(currentprime<=bound)
+                if(binary==1 && currentprime<=bound)
+                {
+                    write(STDOUT_FILENO,(unsigned long *)&currentprime,1);
+                }
+                else if(currentprime<=bound)
                     printf("%ld\n", currentprime);
                 
-                ++currentprime;
-                if(currentprime==3)
-                    printf("%ld\n", currentprime);
+                
+                
                 is_set=true;
                 
             }
@@ -221,7 +230,11 @@ void find_primes(long bound, int verbose, char choice, int binary)
                     }
                     
                 }
-                if(currentprime<=bound)
+                if(binary==1 && currentprime<=bound)
+                {
+                    write(STDOUT_FILENO,(unsigned long *)&currentprime,1);
+                }
+                else if(currentprime<=bound)
                     printf("%ld\n", currentprime);
 
                 is_set=false;

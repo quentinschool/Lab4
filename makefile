@@ -8,15 +8,17 @@ CFLAGS = -Wall -Wshadow -Wunreachable-code -Wredundant-decls \
  -Wdeclaration-after-statement -Wextra -Werror -Wpedantic \
  $(WERROR) $(DEBUG) $(DEFINES)
 sieve = sieve.c
+view_long = view_long.c
 
-
-TARGETS=sieve sieve.o 
+TARGETS=sieve sieve.o view_long view_long.o
 
 all: $(TARGETS)
 
 sieve: $(sieve)
 	$(CC) $(sieve) $(CFLAGS) -o $@ -lm
 
+view_long: $(view_long)
+	$(CC) $(view_long) $(CFLAGS) -o $@ -lm
 clean:
 	rm -f $(TARGETS)
 
