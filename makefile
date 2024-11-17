@@ -22,7 +22,7 @@ view_long: $(view_long)
 clean:
 	rm -f $(TARGETS)
 
-tar:
+tar zip:
 	tar cvfa quesmith_Lab3.tar.gz *.[ch] makefile
 
 git checkin:

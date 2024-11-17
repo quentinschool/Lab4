@@ -18,13 +18,13 @@
 #define RR_BITS 0x03 // 0000 0011
 
 long set_bound();
-void find_primes(long bound, int verbose, char choice, int binary);
+void find_primes(long long bound, int verbose, char choice, int binary);
 
 
 int main(int argc, char * argv[])
 {
     
-    long bound=100;
+    long long bound=100;
     char choice='p';
     int opt;
     int verbose=0;
@@ -65,20 +65,21 @@ int main(int argc, char * argv[])
     return EXIT_SUCCESS;
 }
 
-void find_primes(long bound, int verbose, char choice, int binary)
+void find_primes(long long bound, int verbose, char choice, int binary)
 {
-    uint8_t *list=malloc(((bound/4)+1));
+    uint8_t *list=malloc(((bound/4)+100));
     long count=2;            
-    long current=2;          //current number being checked
+    long long current=2;          //current number being checked
     long currentprime=current;
     uint8_t bits = 0x00;    //for setting and checking bits
     bool is_set=true;       //for checking if bit is set
+    unsigned long printprime=1;
 
     if(binary==1)                    //remove before submitting
         binary=1;
     if(verbose==1)      //verbose output
     {
-        fprintf(stderr,"upper bound: %ld\nshow primes: %s\nshow binary: %s\ntop check  : %ld\n", bound, choice=='p' ? "true" : "false", binary==1 ? "true" : "false", (long)sqrt(bound));
+        fprintf(stderr,"upper bound: %lld\nshow primes: %s\nshow binary: %s\ntop check  : %ld\n", bound, choice=='p' ? "true" : "false", binary==1 ? "true" : "false", (long)sqrt(bound));
     } 
     count=2;
     
@@ -89,7 +90,7 @@ void find_primes(long bound, int verbose, char choice, int binary)
         count=2;
         if(verbose==true)       //verbose output
             fprintf(stderr, "marking multiples of %ld\n", currentprime);
-        while(current<=bound)
+        while((long long)current<=bound)
         {
             current=count*currentprime; //prime*n, to mark each composite
 
@@ -98,35 +99,35 @@ void find_primes(long bound, int verbose, char choice, int binary)
             switch ( current % 4 )  //Sets the bits to mark composite numbers
             {
                 case 0:
-                    if(list[current/4] & LL_BITS)
-                        break;
+                    // if(list[current/4] & LL_BITS)
+                    //     break;
                     if(verbose==true && ~(list[current/4] & LL_BITS))
-                        fprintf(stderr, "\tmarked %ld\n", current);
+                        fprintf(stderr, "\tmarked %lld\n", current);
                     bits = LL_BITS;
                     break;
                 case 1:
-                    if(list[current/4] & LM_BITS)
-                        break;
+                    // if(list[current/4] & LM_BITS)
+                    //     break;
                     if(verbose==true && ~(list[current/4] & LM_BITS))
-                        fprintf(stderr, "\tmarked %ld\n", current);
+                        fprintf(stderr, "\tmarked %lld\n", current);
                     bits = LM_BITS;
                     break;
                 case 2:
-                    if(list[current/4] & RM_BITS)
-                        break;
+                    // if(list[current/4] & RM_BITS)
+                        // break;
                     if(verbose==true && ~(list[current/4] & RM_BITS))
-                        fprintf(stderr, "\tmarked %ld\n", current);
+                        fprintf(stderr, "\tmarked %lld\n", current);
                     bits = RM_BITS;
                     break;
                 case 3:
-                    if(list[current/4] & RR_BITS)
-                        break;
+                    // if(list[current/4] & RR_BITS)
+                    //     break;
                     if(verbose==true && ~(list[current/4] & RR_BITS))
-                        fprintf(stderr, "\tmarked %ld\n", current);
+                        fprintf(stderr, "\tmarked %lld\n", current);
                     bits = RR_BITS;
                     break;
             }
-                if(current<=bound)
+                if((long long)current<=bound)
                     list[current/4] |= bits;
 
             ++count;
@@ -161,42 +162,48 @@ void find_primes(long bound, int verbose, char choice, int binary)
     switch(choice)
     {
         case 'p':
-            currentprime=1;
+            printprime=1;
             is_set=true;
             if(binary==0)
                 printf("%d\n", 2);
-            while(currentprime<=bound)
+            else
             {
-                while(is_set==true && currentprime<=bound)
+                printprime=2;
+                write(STDOUT_FILENO,&printprime,sizeof(printprime));
+                printprime=1;
+            }
+            while((long long)printprime<=bound)
+            {
+                while(is_set==true && (long long)printprime<=bound)
                 {                
-                    ++currentprime;
-                    ++currentprime;
-                    if(currentprime<=bound)
+                    ++printprime;
+                    ++printprime;
+                    if((long long)printprime<=bound)
                     {
-                        switch ( currentprime % 4 )  //Checks bits to find next prime
+                        switch ( printprime % 4 )  //Checks bits to find next prime
                         {
                             case 0:
-                                is_set = list[currentprime/4] & LL_BITS;
+                                is_set = list[printprime/4] & LL_BITS;
                                 break;
                             case 1:
-                                is_set = list[currentprime/4] & LM_BITS;
+                                is_set = list[printprime/4] & LM_BITS;
                                 break;
                             case 2:
-                                is_set = list[currentprime/4] & RM_BITS;
+                                is_set = list[printprime/4] & RM_BITS;
                                 break;
                             case 3:
-                                is_set = list[currentprime/4] & RR_BITS;
+                                is_set = list[printprime/4] & RR_BITS;
                                 break;
                         }
                     }
                     
                 }
-                if(binary==1 && currentprime<=bound)
+                if(binary==1 && (long long)printprime<=bound)
                 {
-                    write(STDOUT_FILENO,(unsigned long *)&currentprime,1);
+                    write(STDOUT_FILENO,&printprime,sizeof(unsigned long));
                 }
-                else if(currentprime<=bound)
-                    printf("%ld\n", currentprime);
+                else if((long long)printprime<=bound)
+                    printf("%ld\n", printprime);
                 
                 
                 
@@ -206,36 +213,36 @@ void find_primes(long bound, int verbose, char choice, int binary)
 
             break;
         case 'c':
-            currentprime=1;
+            printprime=1;
             is_set=false;
-            while(currentprime<=bound)
+            while((long long)printprime<=bound)
             {
-                while(is_set==false && currentprime<=bound)
+                while(is_set==false && (long long)printprime<=bound)
                 {                
-                    ++currentprime;
-                    switch ( currentprime % 4 )  //Checks bits to find next prime
+                    ++printprime;
+                    switch ( printprime % 4 )  //Checks bits to find next prime
                     {
                         case 0:
-                            is_set = list[currentprime/4] & LL_BITS;
+                            is_set = list[printprime/4] & LL_BITS;
                             break;
                         case 1:
-                            is_set = list[currentprime/4] & LM_BITS;
+                            is_set = list[printprime/4] & LM_BITS;
                             break;
                         case 2:
-                            is_set = list[currentprime/4] & RM_BITS;
+                            is_set = list[printprime/4] & RM_BITS;
                             break;
                         case 3:
-                            is_set = list[currentprime/4] & RR_BITS;
+                            is_set = list[printprime/4] & RR_BITS;
                             break;
                     }
                     
                 }
-                if(binary==1 && currentprime<=bound)
+                if(binary==1 && (long long)printprime<=bound)
                 {
-                    write(STDOUT_FILENO,(unsigned long *)&currentprime,1);
+                    write(STDOUT_FILENO,&printprime,sizeof(printprime));
                 }
-                else if(currentprime<=bound)
-                    printf("%ld\n", currentprime);
+                else if((long long)printprime<=bound)
+                    printf("%ld\n", printprime);
 
                 is_set=false;
                 

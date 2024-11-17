@@ -15,36 +15,35 @@
 
 int main(int argc,char * argv[])
 {
-    int arraysize=4;
+    int size=sizeof(unsigned long);
     int op_fd;
     int amount=1;
-    unsigned char buffer[arraysize];
-    for( int i=1;i<argc;i++)
-    {
-        if(argc<2)
+    int i=0;
+    unsigned long buffer[1];    
+    do{
+       
+        op_fd=STDIN_FILENO;
+
+        if(argc>=2)
         {
-            op_fd=STDIN_FILENO;
+          op_fd=open(argv[i+1],O_RDONLY);
         }
-        else
-        {
-          op_fd=open(argv[i],O_RDONLY);
-        }
-        amount=read(op_fd,buffer,arraysize);
+        amount=read(op_fd,buffer,size);
         while(amount!=0)
         {
             if(amount!=0)  
             {
-                for(int k=0;k<amount;k++)
-                {
-                    printf("%u",buffer[k]);
-                }
+
+                printf("%lu",buffer[0]);
+
             }   
             printf("\n");
-            amount=read(op_fd,buffer,arraysize);
+            amount=read(op_fd,buffer,size);
 
         }
         close(op_fd);
-    }
+        i++;
+    }while(i<argc-1);
 
     return EXIT_SUCCESS;
 }
